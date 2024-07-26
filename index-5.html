@@ -7,22 +7,12 @@
    <title>Vonaldiagram Mozgóátlaggal</title>
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    <style>
-            body {
-         background-color: #cbc7c3;
-         ;
-      }
       table {
          width: 100%;
          border-collapse: collapse;
          max-height: 300px;
-         /* Maximális magasság beállítása */
          overflow-y: auto;
-         /* Függőleges görgetés engedélyezése */
-         display: ruby-text;
-         /* Blokkszintű elem, hogy a max-height működjön */
-      } thead{
-         position: sticky;
-         top: 0;
+         display: block;
       }
 
       th,
@@ -38,30 +28,26 @@
 
       .chart-container {
          width: 100%;
-         height: 600px;
-         /* Itt adhatod meg a kívánt magasságot */
       }
    </style>
 </head>
 
 <body>
    <form id="dataForm">
-      <div  style="padding-block: 10px;"><label for="dataInput">Adatok (tabulátorral elválasztva):</label></div>
-      <div>
-         <textarea id="dataInput" rows="4" cols="50"
-            placeholder="-263.8669  -0.3252910 &#10;-299.3872  -0.6550498"></textarea>
-      </div>
-      <div style="padding: 10px;">
-         <label for="yMin">Y-tengely min értéke:</label>
-         <input type="number" id="yMin" value="-2.5" step="0.1" style="width: 50px; margin-inline-end: 20px;">
-         <label for="yMax">Y-tengely max értéke:</label>
-         <input type="number" id="yMax" value="2.5" step="0.1" style="width: 50px;">
-      </div>
-      <div style="padding:0 10px 15px;">
-         <label for="chartHeight">Diagram magassága (px):</label>
-         <input type="number" id="chartHeight" value="800" step="0.1" style="width: 50px;">
-      </div>
-      <button type="submit" style="font-size: .9rem; padding:5px 15px; margin-left: 10px;">Beküldés</button>
+      <label for="dataInput">Adatok (tabulátorral elválasztva):</label>
+      <textarea id="dataInput" rows="4" cols="50"
+         placeholder="-263.8669 -0.3252910\n-299.3872 -0.6550498\n..."></textarea>
+      <br>
+      <label for="yMin">Y-tengely minimum értéke:</label>
+      <input type="number" id="yMin" value="-2.5" step="0.1">
+      <br>
+      <label for="yMax">Y-tengely maximum értéke:</label>
+      <input type="number" id="yMax" value="2.5" step="0.1">
+      <br>
+      <label for="chartHeight">Diagram magassága (px):</label>
+      <input type="number" id="chartHeight" value="600">
+      <br>
+      <button type="submit">Beküldés</button>
    </form>
    <br>
    <div class="chart-container">
@@ -190,9 +176,7 @@
                   title: {
                      display: true,
                      text: 'X-tengely érték'
-                  },
-                  min: -420,  // Y-tengely minimum értéke
-                  max: 420
+                  }
                },
                y: {
                   display: true,
@@ -200,8 +184,8 @@
                      display: true,
                      text: 'Y-tengely érték'
                   },
-                  min: -2.4,  // Y-tengely minimum értéke
-                  max: 2.2    // Y-tengely maximum értéke
+                  min: -2.5,  // Y-tengely minimum értéke
+                  max: 2.5    // Y-tengely maximum értéke
                }
             }
          }
@@ -215,11 +199,18 @@
          config.data.datasets[0].data = originalData;
          config.data.datasets[1].data = smoothedData;
 
+         const yMin = parseFloat(document.getElementById('yMin').value);
+         const yMax = parseFloat(document.getElementById('yMax').value);
+         const chartHeight = parseInt(document.getElementById('chartHeight').value);
+
+         config.options.scales.y.min = yMin;
+         config.options.scales.y.max = yMax;
+
          if (chart) {
             chart.destroy();
          }
          const ctx = document.getElementById('myChart').getContext('2d');
-         ctx.canvas.parentNode.style.height = '800px'; // Itt állítod be a kívánt magasságot
+         ctx.canvas.parentNode.style.height = `${chartHeight}px`;
          chart = new Chart(ctx, config);
       }
    </script>
