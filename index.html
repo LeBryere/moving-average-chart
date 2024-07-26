@@ -7,9 +7,11 @@
    <title>Line Chart with Moving Average</title>
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    <style>
-      body{
-         background-color: #cbc7c3;;
+      body {
+         background-color: #cbc7c3;
+         ;
       }
+
       table {
          width: 100%;
          border-collapse: collapse;
@@ -31,8 +33,9 @@
 <body>
    <form id="dataForm">
       <div style="padding-block-end: 10px;"><label for="dataInput">Data (comma separated or line breaks):</label></div>
-      <div><textarea id="dataInput" rows="4" cols="50" placeholder="-263.8669, -299.3872, -304.4615, ..."></textarea></div>
-      <button type="submit" style="font-size: .9rem; padding:5px 15px;">Send</button>
+      <div><textarea id="dataInput" rows="4" cols="50" placeholder="-263.8669, -299.3872, -304.4615, ..."></textarea>
+      </div>
+      <button type="submit" style="font-size: .9rem; padding:5px 15px;">Submit</button>
    </form>
    <br>
    <label><input type="checkbox" id="originalData" checked> Original data</label>
@@ -41,7 +44,8 @@
    <canvas id="myChart" width="400" height="200"></canvas>
 
 
-   <div style="padding-block: 10px;"><button id="copyToClipboard" style="font-size: .9rem; padding:5px 15px;">Copy to clipboard</button></div>
+   <div style="padding-block: 10px;"><button id="copyToClipboard" style="font-size: .9rem; padding:5px 15px;">Copy to
+         clipboard</button></div>
    <table>
       <thead>
          <tr>
@@ -126,7 +130,7 @@
          document.getElementById('smoothedDataText').textContent = smoothedDataText;
       }
 
-     document.getElementById('commaSeparated').addEventListener('change', function () {
+      document.getElementById('commaSeparated').addEventListener('change', function () {
          if (this.checked) {
             document.getElementById('newlineSeparated').checked = false;
             updateSmoothedDataText();
