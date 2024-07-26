@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Vonaldiagram Mozgóátlaggal</title>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <style>
+            body {
+         background-color: #cbc7c3;
+         ;
+      }
+      table {
+         width: 100%;
+         border-collapse: collapse;
+         max-height: 300px;
+         /* Maximális magasság beállítása */
+         overflow-y: auto;
+         /* Függőleges görgetés engedélyezése */
+         display: ruby-text;
+         /* Blokkszintű elem, hogy a max-height működjön */
+      } thead{
+         position: sticky;
+         top: 0;
+      }
+
+      th,
+      td {
+         border: 1px solid #ddd;
+         padding: 8px;
+      }
+
+      th {
+         background-color: #f2f2f2;
+         text-align: left;
+      }
+
+      .chart-container {
+         width: 100%;
+         height: 600px;
+         /* Itt adhatod meg a kívánt magasságot */
+      }
+   </style>
+</head>
+
+<body>
+   <form id="dataForm">
+      <div  style="padding-block: 10px;"><label for="dataInput">Adatok (tabulátorral elválasztva):</label></div>
+      <div>
+         <textarea id="dataInput" rows="4" cols="50"
+            placeholder="-263.8669 -0.3252910\n-299.3872 -0.6550498\n..."></textarea>
+      </div>
+      <button type="submit" style="font-size: .9rem; padding:5px 15px;">Beküldés</button>
+   </form>
+   <br>
+   <div class="chart-container">
+      <canvas id="myChart"></canvas>
+   </div>
+   <table>
+      <thead>
+         <tr>
+            <th>Index</th>
+            <th>X-tengely érték</th>
+            <th>Y-tengely érték</th>
+            <th>Simított X-tengely érték</th>
+            <th>Simított Y-tengely érték</th>
+         </tr>
+      </thead>
+      <tbody id="dataTable">
+         <!-- Adatok ide kerülnek -->
+      </tbody>
+   </table>
+   <script>
+      let xData = [];
+      let yData = [];
+      let smoothedXData = [];
+      let smoothedYData = [];
+      const windowSize = 5; // Mozgó átlag ablakmérete
+
+      document.getElementById('dataForm').addEventListener('submit', function (event) {
+         event.preventDefault();
+         const inputData = document.getElementById('dataInput').value;
+
+         // Adatok feldolgozása
+         const rows = inputData.trim().split('\n');
+         xData = [];
+         yData = [];
+         rows.forEach(row => {
+            const [x, y] = row.split('\t').map(Number);
+            if (!isNaN(x) && !isNaN(y)) {
+               xData.push(x);
+               yData.push(y);
+            }
+         });
+
+         if (xData.length === 0 || yData.length === 0) {
+            alert('Nincs érvényes adat!');
+            return;
+         }
+
+         smoothedXData = calculateMovingAverage(xData, windowSize);
+         smoothedYData = calculateMovingAverage(yData, windowSize);
+
+         updateTable();
+         updateChart();
+      });
+
+      function calculateMovingAverage(data, windowSize) {
+         let result = [];
+         for (let i = 0; i < data.length; i++) {
+            let start = Math.max(0, i - Math.floor(windowSize / 2));
+            let end = Math.min(data.length, i + Math.floor(windowSize / 2) + 1);
+            let window = data.slice(start, end);
+            let average = window.reduce((sum, value) => sum + value, 0) / window.length;
+            result.push(average);
+         }
+         return result;
+      }
+
+      function updateTable() {
+         const tableBody = document.getElementById('dataTable');
+         tableBody.innerHTML = ''; // Törli a meglévő sorokat
+         for (let i = 0; i < xData.length; i++) {
+            const row = document.createElement('tr');
+            const indexCell = document.createElement('td');
+            indexCell.textContent = i + 1;
+            row.appendChild(indexCell);
+
+            const xDataCell = document.createElement('td');
+            xDataCell.textContent = xData[i];
+            row.appendChild(xDataCell);
+
+            const yDataCell = document.createElement('td');
+            yDataCell.textContent = yData[i];
+            row.appendChild(yDataCell);
+
+            const smoothedXDataCell = document.createElement('td');
+            smoothedXDataCell.textContent = smoothedXData[i].toFixed(2);
+            row.appendChild(smoothedXDataCell);
+
+            const smoothedYDataCell = document.createElement('td');
+            smoothedYDataCell.textContent = smoothedYData[i].toFixed(2);
+            row.appendChild(smoothedYDataCell);
+
+            tableBody.appendChild(row);
+         }
+      }
+
+      const config = {
+         type: 'line',
+         data: {
+            datasets: [{
+               label: 'Eredeti Adatok',
+               borderColor: 'rgba(75, 192, 192, 1)',
+               backgroundColor: 'rgba(75, 192, 192, 0.2)',
+               fill: false,
+               tension: 0.1,
+               borderWidth: 1, // Vonal vastagsága
+               pointRadius: 0, // Nincs adatpont megjelenítve
+               data: []
+            }, {
+               label: 'Simított Adatok',
+               borderColor: 'rgba(153, 102, 255, 1)',
+               backgroundColor: 'rgba(153, 102, 255, 0.2)',
+               fill: false,
+               tension: 0.1,
+               borderWidth: 1, // Vonal vastagsága
+               pointRadius: 0, // Nincs adatpont megjelenítve
+               data: []
+            }]
+         },
+         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+               x: {
+                  type: 'linear',
+                  display: true,
+                  title: {
+                     display: true,
+                     text: 'X-tengely érték'
+                  },
+                  min: -420,  // Y-tengely minimum értéke
+                  max: 420
+               },
+               y: {
+                  display: true,
+                  title: {
+                     display: true,
+                     text: 'Y-tengely érték'
+                  },
+                  min: -2.4,  // Y-tengely minimum értéke
+                  max: 2.2    // Y-tengely maximum értéke
+               }
+            }
+         }
+      };
+
+      let chart;
+      function updateChart() {
+         const originalData = xData.map((x, i) => ({ x: x, y: yData[i] }));
+         const smoothedData = smoothedXData.map((x, i) => ({ x: x, y: smoothedYData[i] }));
+
+         config.data.datasets[0].data = originalData;
+         config.data.datasets[1].data = smoothedData;
+
+         if (chart) {
+            chart.destroy();
+         }
+         const ctx = document.getElementById('myChart').getContext('2d');
+         ctx.canvas.parentNode.style.height = '800px'; // Itt állítod be a kívánt magasságot
+         chart = new Chart(ctx, config);
+      }
+   </script>
+</body>
+
+</html>
