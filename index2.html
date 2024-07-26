@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html lang="hu">
-
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Vonaldiagram Mozgóátlaggal</title>
-   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vonaldiagram Mozgóátlaggal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    <style>
-            body {
+      body {
          background-color: #cbc7c3;
-         ;
       }
+
       table {
          width: 100%;
          border-collapse: collapse;
          max-height: 300px;
          overflow-y: auto;
          display: ruby-text;
-      } thead{
+      }
+
+      thead {
          position: sticky;
          top: 0;
       }
@@ -38,189 +39,204 @@
       }
    </style>
 </head>
-
 <body>
-   <div  style="padding: 0 0 20px 10px;"><a href="index.html"><button>szinus görbés</button></a></div>
+   <div style="padding: 0 0 20px 10px;"><a href="index.html"><button>sine curve</button></a></div>
    <form id="dataForm">
-      <div  style="padding-block: 10px;"><label for="dataInput">Adatok (tabulátorral elválasztva):</label></div>
+      <div style="padding-block: 10px;"><label for="dataInput">Data (tab separated):</label></div>
       <div>
          <textarea id="dataInput" rows="4" cols="30"
             placeholder="-263.8669  -0.3252910 &#10;-299.3872  -0.6550498"></textarea>
       </div>
-         <div style="padding:10px 0 5px ;">
-            <label for="yMin">Y-tengely min értéke:</label>
-            <input type="number" id="yMin" value="-2.5" step="0.1" style="width: 50px;">
-         </div>
-         <div style="padding:5px 0 10px ;">
-            <label for="yMax">Y-tengely max értéke:</label>
-            <input type="number" id="yMax" value="2.5" step="0.1" style="width: 50px;">
-         </div>
+      <div style="padding:10px 0 5px ;">
+         <label for="windowSize">Moving average:</label>
+         <input type="number" id="windowSize" value="5" step="1" min="1" style="width: 50px;">
+      </div>
+      <div style="padding:5px 0 10px ;">
+         <label for="yMax">Y-axis max value:</label>
+         <input type="number" id="yMax" value="2.5" step="0.1" style="width: 50px;">
+      </div>
+      <div style="padding:5px 0 5px ;">
+         <label for="yMin">Y-axis min value:</label>
+         <input type="number" id="yMin" value="-2.5" step="0.1" style="width: 50px;">
+      </div>
       <div style="padding:5px 0 10px;">
-         <label for="chartHeight">Chart magassága (px):</label>
+         <label for="chartHeight">Chart Height (px):</label>
          <input type="number" id="chartHeight" value="800" step="0.1" style="width: 50px;">
       </div>
-      <button type="submit" style="font-size: .9rem; padding:5px 15px; margin-left: 10px;">Beküldés</button>
+      <button type="submit" style="font-size: .9rem; padding:5px 15px; margin-left: 10px;">Submit</button>
    </form>
-   <br>
-   <div class="chart-container">
-      <canvas id="myChart"></canvas>
-   </div>
-   <table>
-      <thead>
-         <tr>
-            <th>Index</th>
-            <th>X-tengely érték</th>
-            <th>Y-tengely érték</th>
-            <th>Simított X-tengely érték</th>
-            <th>Simított Y-tengely érték</th>
-         </tr>
-      </thead>
-      <tbody id="dataTable">
-         <!-- Adatok ide kerülnek -->
-      </tbody>
-   </table>
-   <script>
-      let xData = [];
-      let yData = [];
-      let smoothedXData = [];
-      let smoothedYData = [];
-      const windowSize = 5; // Mozgó átlag ablakmérete
+    <br>
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+    <table>
+        <thead>
+            <tr>
+               <th>Index</th>
+               <th>X-axis value</th>
+               <th>Y-axis value</th>
+               <th>Smoothed X-axis value</th>
+               <th>Smoothed Y-axis value</th>
+            </tr>
+        </thead>
+        <tbody id="dataTable">
+            <!-- Data goes here -->
+        </tbody>
+    </table>
+    <script>
+        let xData = [];
+        let yData = [];
+        let smoothedXData = [];
+        let smoothedYData = [];
 
-      document.getElementById('dataForm').addEventListener('submit', function (event) {
-         event.preventDefault();
-         const inputData = document.getElementById('dataInput').value;
+        document.getElementById('dataForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const inputData = document.getElementById('dataInput').value;
 
-         // Adatok feldolgozása
-         const rows = inputData.trim().split('\n');
-         xData = [];
-         yData = [];
-         rows.forEach(row => {
-            const [x, y] = row.split('\t').map(Number);
-            if (!isNaN(x) && !isNaN(y)) {
-               xData.push(x);
-               yData.push(y);
+            const rows = inputData.trim().split('\n');
+            xData = [];
+            yData = [];
+            rows.forEach(row => {
+                const [x, y] = row.split('\t').map(Number);
+                if (!isNaN(x) && !isNaN(y)) {
+                    xData.push(x);
+                    yData.push(y);
+                }
+            });
+
+            if (xData.length === 0 || yData.length === 0) {
+                alert('Nincs érvényes adat!');
+                return;
             }
-         });
 
-         if (xData.length === 0 || yData.length === 0) {
-            alert('Nincs érvényes adat!');
-            return;
-         }
+            const windowSize = parseInt(document.getElementById('windowSize').value);
 
-         smoothedXData = calculateMovingAverage(xData, windowSize);
-         smoothedYData = calculateMovingAverage(yData, windowSize);
+            smoothedXData = calculateMovingAverage(xData, windowSize);
+            smoothedYData = calculateMovingAverage(yData, windowSize);
 
-         updateTable();
-         updateChart();
-      });
+            updateTable();
+            updateChart();
+        });
 
-      function calculateMovingAverage(data, windowSize) {
-         let result = [];
-         for (let i = 0; i < data.length; i++) {
-            let start = Math.max(0, i - Math.floor(windowSize / 2));
-            let end = Math.min(data.length, i + Math.floor(windowSize / 2) + 1);
-            let window = data.slice(start, end);
-            let average = window.reduce((sum, value) => sum + value, 0) / window.length;
-            result.push(average);
-         }
-         return result;
-      }
-
-      function updateTable() {
-         const tableBody = document.getElementById('dataTable');
-         tableBody.innerHTML = ''; // Törli a meglévő sorokat
-         for (let i = 0; i < xData.length; i++) {
-            const row = document.createElement('tr');
-            const indexCell = document.createElement('td');
-            indexCell.textContent = i + 1;
-            row.appendChild(indexCell);
-
-            const xDataCell = document.createElement('td');
-            xDataCell.textContent = xData[i];
-            row.appendChild(xDataCell);
-
-            const yDataCell = document.createElement('td');
-            yDataCell.textContent = yData[i];
-            row.appendChild(yDataCell);
-
-            const smoothedXDataCell = document.createElement('td');
-            smoothedXDataCell.textContent = smoothedXData[i].toFixed(2);
-            row.appendChild(smoothedXDataCell);
-
-            const smoothedYDataCell = document.createElement('td');
-            smoothedYDataCell.textContent = smoothedYData[i].toFixed(2);
-            row.appendChild(smoothedYDataCell);
-
-            tableBody.appendChild(row);
-         }
-      }
-
-      const config = {
-         type: 'line',
-         data: {
-            datasets: [{
-               label: 'Eredeti Adatok',
-               borderColor: 'rgba(75, 192, 192, 1)',
-               backgroundColor: 'rgba(75, 192, 192, 0.2)',
-               fill: false,
-               tension: 0.1,
-               borderWidth: 1, // Vonal vastagsága
-               pointRadius: 0, // Nincs adatpont megjelenítve
-               data: []
-            }, {
-               label: 'Simított Adatok',
-               borderColor: 'rgba(153, 102, 255, 1)',
-               backgroundColor: 'rgba(153, 102, 255, 0.2)',
-               fill: false,
-               tension: 0.1,
-               borderWidth: 1, // Vonal vastagsága
-               pointRadius: 0, // Nincs adatpont megjelenítve
-               data: []
-            }]
-         },
-         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-               x: {
-                  type: 'linear',
-                  display: true,
-                  title: {
-                     display: true,
-                     text: 'X-tengely érték'
-                  },
-                  min: -420,  // Y-tengely minimum értéke
-                  max: 420
-               },
-               y: {
-                  display: true,
-                  title: {
-                     display: true,
-                     text: 'Y-tengely érték'
-                  },
-                  min: -2.4,  // Y-tengely minimum értéke
-                  max: 2.2    // Y-tengely maximum értéke
-               }
+        function calculateMovingAverage(data, windowSize) {
+            let result = [];
+            for (let i = 0; i < data.length; i++) {
+                let start = Math.max(0, i - Math.floor(windowSize / 2));
+                let end = Math.min(data.length, i + Math.floor(windowSize / 2) + 1);
+                let window = data.slice(start, end);
+                let average = window.reduce((sum, value) => sum + value, 0) / window.length;
+                result.push(average);
             }
-         }
-      };
+            return result;
+        }
 
-      let chart;
-      function updateChart() {
-         const originalData = xData.map((x, i) => ({ x: x, y: yData[i] }));
-         const smoothedData = smoothedXData.map((x, i) => ({ x: x, y: smoothedYData[i] }));
+        function updateTable() {
+            const tableBody = document.getElementById('dataTable');
+            tableBody.innerHTML = '';
+            for (let i = 0; i < xData.length; i++) {
+                const row = document.createElement('tr');
+                const indexCell = document.createElement('td');
+                indexCell.textContent = i + 1;
+                row.appendChild(indexCell);
 
-         config.data.datasets[0].data = originalData;
-         config.data.datasets[1].data = smoothedData;
+                const xDataCell = document.createElement('td');
+                xDataCell.textContent = xData[i];
+                row.appendChild(xDataCell);
 
-         if (chart) {
-            chart.destroy();
-         }
-         const ctx = document.getElementById('myChart').getContext('2d');
-         ctx.canvas.parentNode.style.height = '800px'; // Itt állítod be a kívánt magasságot
-         chart = new Chart(ctx, config);
-      }
-   </script>
+                const yDataCell = document.createElement('td');
+                yDataCell.textContent = yData[i];
+                row.appendChild(yDataCell);
+
+                const smoothedXDataCell = document.createElement('td');
+                smoothedXDataCell.textContent = smoothedXData[i].toFixed(2);
+                row.appendChild(smoothedXDataCell);
+
+                const smoothedYDataCell = document.createElement('td');
+                smoothedYDataCell.textContent = smoothedYData[i].toFixed(2);
+                row.appendChild(smoothedYDataCell);
+
+                tableBody.appendChild(row);
+            }
+        }
+
+                function getColor(i, total) {
+                     const ratio = i / total;
+                     const r = Math.floor(255 * (1 - ratio));
+                     const g = Math.floor(255 * (1 - ratio));
+                     const b = Math.floor(255 * (1 - ratio));
+                     return `rgb(${r}, ${g}, ${b})`;
+                  }
+
+        const config = {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Original Data',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: false,
+                    tension: 0.1,
+                    borderWidth: 1, // Vonal vastagsága
+                    pointRadius: 1, // Nincs adatpont megjelenítve
+                    data: []
+                }, {
+                    label: 'Smoothed Data',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    fill: false,
+                    tension: 0.1,
+                    borderWidth: 1, // Vonal vastagsága
+                    pointRadius: 1, // Nincs adatpont megjelenítve
+                    data: []
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'X-axis value'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Y-axis value'
+                        },
+                        min: -2.5,
+                        max: 2.5
+                    }
+                }
+            }
+        };
+
+        let chart;
+        function updateChart() {
+            const originalData = xData.map((x, i) => ({ x: x, y: yData[i] }));
+            const smoothedData = smoothedXData.map((x, i) => ({ x: x, y: smoothedYData[i] }));
+
+            config.data.datasets[0].data = originalData;
+            config.data.datasets[1].data = smoothedData;
+
+            const yMin = parseFloat(document.getElementById('yMin').value);
+            const yMax = parseFloat(document.getElementById('yMax').value);
+            const chartHeight = parseInt(document.getElementById('chartHeight').value);
+
+            config.options.scales.y.min = yMin;
+            config.options.scales.y.max = yMax;
+
+            if (chart) {
+                chart.destroy();
+            }
+            const ctx = document.getElementById('myChart').getContext('2d');
+            ctx.canvas.parentNode.style.height = `${chartHeight}px`;
+            chart = new Chart(ctx, config);
+        }
+    </script>
 </body>
-
 </html>
