@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Line Chart with Moving Average</title>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <style>
+      body{
+         background-color: #cbc7c3;;
+      }
+      table {
+         width: 100%;
+         border-collapse: collapse;
+      }
+
+      th,
+      td {
+         border: 1px solid #ddd;
+         padding: 8px;
+      }
+
+      th {
+         background-color: #f2f2f2;
+         text-align: left;
+      }
+   </style>
+</head>
+
+<body>
+   <form id="dataForm">
+      <div style="padding-block-end: 10px;"><label for="dataInput">Data (comma separated or line breaks):</label></div>
+      <div><textarea id="dataInput" rows="4" cols="50" placeholder="-263.8669, -299.3872, -304.4615, ..."></textarea></div>
+      <button type="submit" style="font-size: .9rem; padding:5px 15px;">Send</button>
+   </form>
+   <br>
+   <label><input type="checkbox" id="originalData" checked> Original data</label>
+   <label><input type="checkbox" id="smoothedData" checked> Smoothed data</label>
+
+   <canvas id="myChart" width="400" height="200"></canvas>
+
+
+   <div style="padding-block: 10px;"><button id="copyToClipboard" style="font-size: .9rem; padding:5px 15px;">Copy to clipboard</button></div>
+   <table>
+      <thead>
+         <tr>
+            <th>Index</th>
+            <th>Original data</th>
+            <th>Smoothed data</th>
+         </tr>
+      </thead>
+      <tbody id="dataTable">
+         <!-- Data goes here -->
+      </tbody>
+   </table>
+   <div style="padding-block: 20px;">
+      <p>choose the format in which you want the data</p>
+      <label><input type="checkbox" id="commaSeparated" checked> Comma separated</label>
+      <label><input type="checkbox" id="newlineSeparated"> Line breaks</label>
+   </div>
+   <div>
+      <strong>Smoothed data:</strong>
+      <p id="smoothedDataText"></p>
+   </div>
+   <script>
+      let originalData = [];
+      let smoothedData = [];
+
+      document.getElementById('dataForm').addEventListener('submit', function (event) {
+         event.preventDefault();
+         const inputData = document.getElementById('dataInput').value;
+         originalData = inputData.split(/\s*[\r\n]+\s*/).map(Number);
+         smoothedData = calculateMovingAverage(originalData, 10);
+         updateTable();
+         updateChart();
+         updateSmoothedDataText();
+      });
+
+      function calculateMovingAverage(data, windowSize) {
+         let result = [];
+         for (let i = 0; i < data.length; i++) {
+            let start = Math.max(0, i - Math.floor(windowSize / 2));
+            let end = Math.min(data.length, i + Math.floor(windowSize / 2) + 1);
+            let window = data.slice(start, end);
+            let average = window.reduce((sum, value) => sum + value, 0) / window.length;
+            result.push(average);
+         }
+         return result;
+      }
+
+      function updateTable() {
+         const tableBody = document.getElementById('dataTable');
+         tableBody.innerHTML = ''; // deletes existing rows
+         for (let i = 0; i < originalData.length; i++) {
+            const row = document.createElement('tr');
+            const indexCell = document.createElement('td');
+            indexCell.textContent = i + 1;
+            row.appendChild(indexCell);
+
+            const originalDataCell = document.createElement('td');
+            originalDataCell.textContent = originalData[i];
+            row.appendChild(originalDataCell);
+
+            const smoothedDataCell = document.createElement('td');
+            smoothedDataCell.textContent = smoothedData[i].toFixed(2);
+            row.appendChild(smoothedDataCell);
+
+            tableBody.appendChild(row);
+         }
+      }
+
+      function updateSmoothedDataText() {
+         const isCommaSeparated = document.getElementById('commaSeparated').checked;
+         const isNewlineSeparated = document.getElementById('newlineSeparated').checked;
+
+         let smoothedDataText;
+         if (isCommaSeparated) {
+            smoothedDataText = smoothedData.map(value => value.toFixed(2)).join(', ');
+         } else if (isNewlineSeparated) {
+            smoothedDataText = smoothedData.map(value => value.toFixed(2)).join('\n');
+         } else {
+            smoothedDataText = '';
+         }
+
+         document.getElementById('smoothedDataText').textContent = smoothedDataText;
+      }
+
+     document.getElementById('commaSeparated').addEventListener('change', function () {
+         if (this.checked) {
+            document.getElementById('newlineSeparated').checked = false;
+            updateSmoothedDataText();
+         }
+      });
+
+      document.getElementById('newlineSeparated').addEventListener('change', function () {
+         if (this.checked) {
+            document.getElementById('commaSeparated').checked = false;
+            updateSmoothedDataText();
+         }
+      });
+
+      document.getElementById('copyToClipboard').addEventListener('click', function () {
+         const isCommaSeparated = document.getElementById('commaSeparated').checked;
+         const isNewlineSeparated = document.getElementById('newlineSeparated').checked;
+
+         let smoothedDataText;
+         if (isCommaSeparated) {
+            smoothedDataText = smoothedData.map(value => value.toFixed(2)).join(', ');
+         } else if (isNewlineSeparated) {
+            smoothedDataText = smoothedData.map(value => value.toFixed(2)).join('\n');
+         } else {
+            smoothedDataText = '';
+         }
+
+         // Copy to clipboard
+         navigator.clipboard.writeText(smoothedDataText).then(() => {
+            alert('Az adatok másolva lettek a vágólapra!');
+         }).catch(err => {
+            console.error('Hiba történt a vágólapra másolás során: ', err);
+         });
+      });
+      const config = {
+         type: 'line',
+         data: {
+            labels: [], // Indexes for tags
+            datasets: []
+         },
+         options: {
+            scales: {
+               x: {
+                  display: true,
+                  title: {
+                     display: true,
+                     text: 'Index'
+                  }
+               },
+               y: {
+                  display: true,
+                  title: {
+                     display: true,
+                     text: 'Érték'
+                  }
+               }
+            }
+         }
+      };
+
+      let chart;
+      function updateChart() {
+         const datasets = [];
+         if (document.getElementById('originalData').checked) {
+            datasets.push({
+               label: 'Original data',
+               data: originalData,
+               borderColor: 'rgba(255, 99, 132, 1)',
+               backgroundColor: 'rgba(255, 99, 132, 0.2)',
+               fill: false,
+               tension: 0.1
+            });
+         }
+         if (document.getElementById('smoothedData').checked) {
+            datasets.push({
+               label: 'Smoothed data',
+               data: smoothedData.map(value => parseFloat(value.toFixed(2))),
+               borderColor: 'rgba(75, 192, 192, 1)',
+               backgroundColor: 'rgba(75, 192, 192, 0.2)',
+               fill: false,
+               tension: 0.1
+            });
+         }
+         config.data.labels = originalData.map((_, index) => index + 1);
+         config.data.datasets = datasets;
+         if (chart) {
+            chart.destroy();
+         }
+         chart = new Chart(document.getElementById('myChart').getContext('2d'), config);
+      }
+
+      document.getElementById('originalData').addEventListener('change', updateChart);
+      document.getElementById('smoothedData').addEventListener('change', updateChart);
+   </script>
+</body>
+
+</html>
