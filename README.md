@@ -1,10 +1,10 @@
-# [Line Chart with Moving Average](https://lebryere.github.io/moving-average-chart/)
-
 ## Browser Support
 
 ![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Edge](https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png) | ![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) | ![Safari](https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png) | ![Opera](https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png) | ![Samsung Internet](https://raw.githubusercontent.com/alrra/browser-logos/master/src/samsung-internet/samsung-internet_48x48.png)
 --- | --- | --- | --- | --- | --- |
 99+ ✔ | 96+ ✔ | 93+ ✔ | 92+ ✔ | 87+ ✔ | 85+ ✔ |
+
+# [Line Chart with Moving Average](https://lebryere.github.io/moving-average-chart/)
 
 ## Preview
 
@@ -76,7 +76,7 @@ This project is a simple web application that displays a line chart with origina
 This project is open source and free to use. Please respect the license terms of any libraries used.
 
 ##
-# Line Chart with x - y Moving Average
+# [Line Chart with x - y Moving Average](https://lebryere.github.io/moving-average-chart/index2.html)
 
 [![Resume Preview](preview2.jpg)](https://lebryere.github.io/moving-average-chart/index2.html)
 
@@ -147,7 +147,7 @@ This project is open source and free to use. Please respect the license terms of
 
 
 ##
-# Line Chart with multi x - y Moving Average
+# [Line Chart with multi x - y Moving Average](https://lebryere.github.io/moving-average-chart/index3.html)
 
 [![Resume Preview](preview3.jpg)](https://lebryere.github.io/moving-average-chart/index3.html)
 
