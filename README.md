@@ -76,14 +76,11 @@ This project is a simple web application that displays a line chart with origina
 This project is open source and free to use. Please respect the license terms of any libraries used.
 
 ##
-##
+# Line Chart with x - y Moving Average
 
 [![Resume Preview](preview2.jpg)](https://lebryere.github.io/moving-average-chart/index2.html)
 
 **[View Live Preview](https://lebryere.github.io/moving-average-chart/index2.html)**
-
-
-# Line Chart with x - y Moving Average
 
 This project is a simple web application that displays a line chart with original and smoothed data. Users can input data and choose how it should be displayed: as a comma-separated list or newline-separated. The chart is automatically updated with the selected data.
 
@@ -149,18 +146,13 @@ This project is a simple web application that displays a line chart with origina
 This project is open source and free to use. Please respect the license terms of any libraries used.
 
 
-
-## Copyright and License
-
-Copyright 2024 Lebryere. Code released under the [![GitHub license](https://img.shields.io/badge/licence-extended_CC_BY_NC-green%3F%26style%3Dplastic?style=plastic)](https://raw.githubusercontent.com/LeBryere/moving-average-chart/master/LICENCE)
-
+##
+# Line Chart with multi x - y Moving Average
 
 [![Resume Preview](preview3.jpg)](https://lebryere.github.io/moving-average-chart/index3.html)
 
 **[View Live Preview](https://lebryere.github.io/moving-average-chart/index3.html)**
 
-
-# Line Chart with multi x - y Moving Average
 
 This project is a web application that displays a line chart with multiple datasets, each with its own moving average. Users can input data for up to three datasets and configure various chart options.
 
