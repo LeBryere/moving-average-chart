@@ -75,6 +75,9 @@ This project is a simple web application that displays a line chart with origina
 
 This project is open source and free to use. Please respect the license terms of any libraries used.
 
+##
+##
+
 [![Resume Preview](preview2.jpg)](https://lebryere.github.io/moving-average-chart/index2.html)
 
 **[View Live Preview](https://lebryere.github.io/moving-average-chart/index2.html)**
