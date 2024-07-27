@@ -75,7 +75,7 @@ This project is a simple web application that displays a line chart with origina
 
 This project is open source and free to use. Please respect the license terms of any libraries used.
 
-[![Resume Preview](preview2.jpg)](https://lebryere.github.io/moving-average-chart/)
+[![Resume Preview](preview2.jpg)](https://lebryere.github.io/moving-average-chart/index2.html)
 
 **[View Live Preview](https://lebryere.github.io/moving-average-chart/index2.html)**
 
@@ -152,7 +152,7 @@ This project is open source and free to use. Please respect the license terms of
 Copyright 2024 Lebryere. Code released under the [![GitHub license](https://img.shields.io/badge/licence-extended_CC_BY_NC-green%3F%26style%3Dplastic?style=plastic)](https://raw.githubusercontent.com/LeBryere/moving-average-chart/master/LICENCE)
 
 
-[![Resume Preview](preview3.jpg)](https://lebryere.github.io/moving-average-chart/)
+[![Resume Preview](preview3.jpg)](https://lebryere.github.io/moving-average-chart/index3.html)
 
 **[View Live Preview](https://lebryere.github.io/moving-average-chart/index3.html)**
 
