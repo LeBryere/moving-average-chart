@@ -77,7 +77,7 @@ This project is open source and free to use. Please respect the license terms of
 
 [![Resume Preview](preview2.jpg)](https://lebryere.github.io/moving-average-chart/)
 
-**[View Live Preview](https://lebryere.github.io/moving-average-chart/)**
+**[View Live Preview](https://lebryere.github.io/moving-average-chart/index2.html)**
 
 
 # Line Chart with x - y Moving Average
@@ -154,7 +154,7 @@ Copyright 2024 Lebryere. Code released under the [![GitHub license](https://img.
 
 [![Resume Preview](preview3.jpg)](https://lebryere.github.io/moving-average-chart/)
 
-**[View Live Preview](https://lebryere.github.io/moving-average-chart/)**
+**[View Live Preview](https://lebryere.github.io/moving-average-chart/index3.html)**
 
 
 # Line Chart with multi x - y Moving Average
