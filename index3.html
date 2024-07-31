@@ -6,83 +6,52 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Line Chart with Moving Average</title>
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-   <style>
-      body {
-         background-color: #cbc7c3;
-      }
-
-      table {
-         width: 100%;
-         border-collapse: collapse;
-         max-height: 300px;
-         overflow-y: auto;
-         display: ruby-text;
-      }
-
-      thead {
-         position: sticky;
-         top: 0;
-      }
-
-      th,
-      td {
-         border: 1px solid #ddd;
-         padding: 8px;
-      }
-
-      th {
-         background-color: #f2f2f2;
-         text-align: left;
-      }
-
-      .chart-container {
-         width: 100%;
-      }
-   </style>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-   <div style="padding: 0 0 20px 10px;">
+   <div class="goto">
       <a href="index.html"><button>sine curve</button></a>
       <a href="index2.html"><button>x-y diagram</button></a>
    </div>
    <form id="dataForm">
-      <div style="padding-block: 10px;"><label for="dataInput1">Data 1 (tab separated):</label></div>
+      <div class="pb-10"><label for="dataInput1">Data 1 (tab separated):</label></div>
       <div>
          <textarea id="dataInput1" rows="4" cols="30"
             placeholder="-263.8669  -0.3252910&#10;-299.3872  -0.6550498"></textarea>
       </div>
-      <div style="padding-block: 10px;"><label for="dataInput2">Data 2 (tab separated):</label></div>
+      <div class="pb-10"><label for="dataInput2">Data 2 (tab separated):</label></div>
       <div>
          <textarea id="dataInput2" rows="4" cols="30" placeholder="value1  value2"></textarea>
       </div>
-      <div style="padding-block: 10px;"><label for="dataInput3">Data 3 (tab separated):</label></div>
+      <div class="pb-10"><label for="dataInput3">Data 3 (tab separated):</label></div>
       <div>
          <textarea id="dataInput3" rows="4" cols="30" placeholder="value1  value2"></textarea>
       </div>
-      <div style="padding:10px 0 5px ;">
-         <label for="windowSize">Moving average:</label>
-         <input type="number" id="windowSize" value="5" step="1" min="1" style="width: 50px;">
+      <div class="inputBox">
+         <label for="windowSize">Moving average:
+            <input type="number" id="windowSize" value="5" step="1" min="1"></label>
+         <label for="yMax">Y-axis max value:
+            <input type="number" id="yMax" value="2.5" step="0.1"></label>
+         <label for="yMin">Y-axis min value:
+            <input type="number" id="yMin" value="-2.5" step="0.1"></label>
+         <label for="chartHeight">Chart Height (px):
+            <input type="number" id="chartHeight" value="800" step="0.1"></label>
+         <label for="absXValues">Absolute X Values:
+            <input type="checkbox" id="absXValues" checked></label>
+         <div>
+            <button id="loadDataBtn" class="dataBtn">Load Data</button>
+            <button type="submit" class="submitBtn">Submit</button>
+         </div>
       </div>
-      <div style="padding:5px 0 5px ;">
-         <label for="yMax">Y-axis max value:</label>
-         <input type="number" id="yMax" value="2.5" step="0.1" style="width: 50px;">
-      </div>
-      <div style="padding:5px 0 5px ;">
-         <label for="yMin">Y-axis min value:</label>
-         <input type="number" id="yMin" value="-2.5" step="0.1" style="width: 50px;">
-      </div>
-      <div style="padding:5px 0 10px;">
-         <label for="chartHeight">Chart Height (px):</label>
-         <input type="number" id="chartHeight" value="800" step="0.1" style="width: 50px;">
-      </div>
-      <div style="padding:5px 0 10px;">
-         <label for="absXValues">Absolute X Values:</label>
-         <input type="checkbox" id="absXValues" checked>
-      </div>
-      <button type="submit" style="font-size: .9rem; padding:5px 15px; margin-left: 10px;">Submit</button>
    </form>
-   <br>
+
+   <button id="savePdfBtn" class="pdfBtn">Save Chart as PDF</button>
+   <button id="saveDataBtn" class="dataBtn">Save Data</button>
+   <input type="file" id="loadDataInput" style="display:none;">
+   
    <div class="chart-container">
       <canvas id="myChart"></canvas>
    </div>
@@ -206,6 +175,61 @@
          ctx.canvas.parentNode.style.height = `${chartHeight}px`;
          chart = new Chart(ctx, config);
       }
+
+      document.getElementById('savePdfBtn').addEventListener('click', function () {
+         const { jsPDF } = window.jspdf;
+         const pdf = new jsPDF('p', 'mm', 'a4');
+         const chartContainer = document.querySelector('.chart-container');
+
+         html2canvas(chartContainer).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = 190;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+            pdf.save('chart.pdf');
+         });
+      });
+
+      document.getElementById('saveDataBtn').addEventListener('click', function () {
+         const data = {
+            data1: document.getElementById('dataInput1').value,
+            data2: document.getElementById('dataInput2').value,
+            data3: document.getElementById('dataInput3').value,
+            windowSize: document.getElementById('windowSize').value,
+            yMax: document.getElementById('yMax').value,
+            yMin: document.getElementById('yMin').value,
+            chartHeight: document.getElementById('chartHeight').value,
+            absXValues: document.getElementById('absXValues').checked
+         };
+         const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+         const url = URL.createObjectURL(blob);
+         const a = document.createElement('a');
+         a.href = url;
+         a.download = 'data.json';
+         a.click();
+         URL.revokeObjectURL(url);
+      });
+
+      document.getElementById('loadDataBtn').addEventListener('click', function () {
+         document.getElementById('loadDataInput').click();
+      });
+
+      document.getElementById('loadDataInput').addEventListener('change', function (event) {
+         const file = event.target.files[0];
+         const reader = new FileReader();
+         reader.onload = function (e) {
+            const data = JSON.parse(e.target.result);
+            document.getElementById('dataInput1').value = data.data1;
+            document.getElementById('dataInput2').value = data.data2;
+            document.getElementById('dataInput3').value = data.data3;
+            document.getElementById('windowSize').value = data.windowSize;
+            document.getElementById('yMax').value = data.yMax;
+            document.getElementById('yMin').value = data.yMin;
+            document.getElementById('chartHeight').value = data.chartHeight;
+            document.getElementById('absXValues').checked = data.absXValues;
+         };
+         reader.readAsText(file);
+      });
    </script>
 </body>
 
