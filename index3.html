@@ -53,7 +53,6 @@
                   <input type="number" id="yMin" value="-2.5" step="0.1"></label>
             </div>
          </div>
-
          <div class="checkboxWrapper">Absolute X Values:
             <input class="switch" type="checkbox" id="absXValues" name="absXValues" value="private" checked>
             <label for="absXValues">
@@ -73,9 +72,7 @@
          <button id="loadDataBtn" class="dataBtn" type="button">Load Data</button>
          <button type="submit" class="submitBtn">Submit</button>
       </div>
-      </div>
    </form>
-
    <button id="savePdfBtn" class="pdfBtn">Save Chart as PDF</button>
    <button id="saveDataBtn" class="dataBtn">Save Data</button>
    <input type="file" id="loadDataInput" style="display:none;">
@@ -83,6 +80,7 @@
    <div class="chart-container">
       <canvas id="myChart"></canvas>
    </div>
+
    <script>
       let datasets = [];
 
