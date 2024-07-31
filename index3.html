@@ -5,7 +5,6 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Line Chart with Moving Average</title>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
    <script src="./js/npmChart.js"></script>
    <script src="./js/jspdf.umd.min.js"></script>
    <script src="./js/html2canvas.min.js"></script>
@@ -178,37 +177,43 @@
       }
 
       document.getElementById('savePdfBtn').addEventListener('click', function () {
-         const { jsPDF } = window.jspdf;
-         const pdf = new jsPDF('p', 'mm', 'a4');
-         const chartContainer = document.querySelector('.chart-container');
+         const fileName = prompt("Enter the file name for the PDF:", "chart.pdf");
+         if (fileName) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const chartContainer = document.querySelector('.chart-container');
 
-         html2canvas(chartContainer).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const imgWidth = 190;
-            const imgHeight = canvas.height * imgWidth / canvas.width;
-            pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-            pdf.save('chart.pdf');
-         });
+            html2canvas(chartContainer).then(canvas => {
+               const imgData = canvas.toDataURL('image/png');
+               const imgWidth = 190;
+               const imgHeight = canvas.height * imgWidth / canvas.width;
+               pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+               pdf.save(fileName);
+            });
+         }
       });
 
       document.getElementById('saveDataBtn').addEventListener('click', function () {
-         const data = {
-            data1: document.getElementById('dataInput1').value,
-            data2: document.getElementById('dataInput2').value,
-            data3: document.getElementById('dataInput3').value,
-            windowSize: document.getElementById('windowSize').value,
-            yMax: document.getElementById('yMax').value,
-            yMin: document.getElementById('yMin').value,
-            chartHeight: document.getElementById('chartHeight').value,
-            absXValues: document.getElementById('absXValues').checked
-         };
-         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-         const url = URL.createObjectURL(blob);
-         const a = document.createElement('a');
-         a.href = url;
-         a.download = 'data.json';
-         a.click();
-         URL.revokeObjectURL(url);
+         const fileName = prompt("Enter the file name for the data:", "data.json");
+         if (fileName) {
+            const data = {
+               data1: document.getElementById('dataInput1').value,
+               data2: document.getElementById('dataInput2').value,
+               data3: document.getElementById('dataInput3').value,
+               windowSize: document.getElementById('windowSize').value,
+               yMax: document.getElementById('yMax').value,
+               yMin: document.getElementById('yMin').value,
+               chartHeight: document.getElementById('chartHeight').value,
+               absXValues: document.getElementById('absXValues').checked
+            };
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+         }
       });
 
       document.getElementById('loadDataBtn').addEventListener('click', function () {
@@ -216,48 +221,21 @@
       });
 
       document.getElementById('loadDataInput').addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-               try {
-                  const data = JSON.parse(e.target.result);
-                  console.log('Beolvasott adatok:', data); // Debug üzenet
-
-                  document.getElementById('dataInput1').value = data.data1 || '';
-                  document.getElementById('dataInput2').value = data.data2 || '';
-                  document.getElementById('dataInput3').value = data.data3 || '';
-                  document.getElementById('windowSize').value = data.windowSize || 5;
-                  document.getElementById('yMax').value = data.yMax || 2.5;
-                  document.getElementById('yMin').value = data.yMin || -2.5;
-                  document.getElementById('chartHeight').value = data.chartHeight || 800;
-                  document.getElementById('absXValues').checked = data.absXValues || false;
-
-                  // Ellenőrizzük az adatokat
-                  const dataInputs = [data.data1, data.data2, data.data3];
-                  let validData = false;
-
-                  dataInputs.forEach(dataInput => {
-                     const rows = dataInput.trim().split('\n');
-                     if (rows.some(row => row.trim().split('\t').length === 2 && !isNaN(row.trim().split('\t')[0]) && !isNaN(row.trim().split('\t')[1]))) {
-                        validData = true;
-                     }
-                  });
-
-                  if (!validData) {
-                     console.log('Nincs érvényes adat!'); // Debug üzenet
-                     alert('Nincs érvényes adat!');
-                  } else {
-                     updateChart(); // Frissítjük a chartot, ha van érvényes adat
-                  }
-               } catch (error) {
-                  console.error('Hiba történt az adatok betöltése közben:', error);
-               }
-            };
-
-            reader.readAsText(file);
-         });
+         const file = event.target.files[0];
+         const reader = new FileReader();
+         reader.onload = function (e) {
+            const data = JSON.parse(e.target.result);
+            document.getElementById('dataInput1').value = data.data1;
+            document.getElementById('dataInput2').value = data.data2;
+            document.getElementById('dataInput3').value = data.data3;
+            document.getElementById('windowSize').value = data.windowSize;
+            document.getElementById('yMax').value = data.yMax;
+            document.getElementById('yMin').value = data.yMin;
+            document.getElementById('chartHeight').value = data.chartHeight;
+            document.getElementById('absXValues').checked = data.absXValues;
+         };
+         reader.readAsText(file);
+      });
    </script>
 </body>
 
