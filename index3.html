@@ -17,34 +17,62 @@
       <a href="index2.html"><button>x-y diagram</button></a>
    </div>
    <form id="dataForm">
-      <div class="pb-10"><label for="dataInput1">Data 1 (tab separated):</label></div>
-      <div>
-         <textarea id="dataInput1" rows="4" cols="30"
-            placeholder="-263.8669  -0.3252910&#10;-299.3872  -0.6550498"></textarea>
-      </div>
-      <div class="pb-10"><label for="dataInput2">Data 2 (tab separated):</label></div>
-      <div>
-         <textarea id="dataInput2" rows="4" cols="30" placeholder="value1  value2"></textarea>
-      </div>
-      <div class="pb-10"><label for="dataInput3">Data 3 (tab separated):</label></div>
-      <div>
-         <textarea id="dataInput3" rows="4" cols="30" placeholder="value1  value2"></textarea>
+      <div class="aaa">
+         <div>
+            <div class="pb-10"><label for="dataInput1">Data 1 (tab separated):</label></div>
+            <div>
+               <textarea id="dataInput1" rows="4" cols="30"
+                  placeholder="-263.8669  -0.3252910&#10;-299.3872  -0.6550498"></textarea>
+            </div>
+         </div>
+         <div>
+            <div class="pb-10"><label for="dataInput2">Data 2 (tab separated):</label></div>
+            <div>
+               <textarea id="dataInput2" rows="4" cols="30" placeholder="value1  value2"></textarea>
+            </div>
+         </div>
+         <div>
+            <div class="pb-10"><label for="dataInput3">Data 3 (tab separated):</label></div>
+            <div>
+               <textarea id="dataInput3" rows="4" cols="30" placeholder="value1  value2"></textarea>
+            </div>
+         </div>
       </div>
       <div class="inputBox">
-         <label for="windowSize">Moving average:
-            <input type="number" id="windowSize" value="5" step="1" min="1"></label>
-         <label for="yMax">Y-axis max value:
-            <input type="number" id="yMax" value="2.5" step="0.1"></label>
-         <label for="yMin">Y-axis min value:
-            <input type="number" id="yMin" value="-2.5" step="0.1"></label>
-         <label for="chartHeight">Chart Height (px):
-            <input type="number" id="chartHeight" value="800" step="0.1"></label>
-         <label for="absXValues">Absolute X Values:
-            <input type="checkbox" id="absXValues" checked></label>
          <div>
-            <button id="loadDataBtn" class="dataBtn" type="button">Load Data</button>
-            <button type="submit" class="submitBtn">Submit</button>
+            <div>
+               <label for="windowSize">Moving average:
+                  <input type="number" id="windowSize" value="5" step="1" min="1"></label>
+               <label for="chartHeight">Chart Height (px):
+                  <input type="number" id="chartHeight" value="800" step="0.1"></label>
+            </div>
+            <div>
+               <label for="yMax">Y-axis max value:
+                  <input type="number" id="yMax" value="2.5" step="0.1"></label>
+               <label for="yMin">Y-axis min value:
+                  <input type="number" id="yMin" value="-2.5" step="0.1"></label>
+            </div>
          </div>
+
+         <div class="checkboxWrapper">Absolute X Values:
+            <input class="switch" type="checkbox" id="absXValues" name="absXValues" value="private">
+            <label for="absXValues">
+               <span class="switch-x-text">This is </span>
+               <span class="switch-x-toggletext">
+                  <span class="switch-x-unchecked">
+                     <span class="switch-x-hiddenlabel">Unchecked: </span>Off
+                  </span>
+                  <span class="switch-x-checked">
+                     <span class="switch-x-hiddenlabel">Checked: </span>On
+                  </span>
+               </span>
+            </label>
+         </div>
+      </div>
+      <div>
+         <button id="loadDataBtn" class="dataBtn" type="button">Load Data</button>
+         <button type="submit" class="submitBtn">Submit</button>
+      </div>
       </div>
    </form>
 
