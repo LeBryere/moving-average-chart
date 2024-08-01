@@ -187,10 +187,12 @@
             datasets.push({
                label: 'Original data',
                data: originalData,
-               borderColor: 'rgba(255, 99, 132, 1)',
-               backgroundColor: 'rgba(255, 99, 132, 0.2)',
+               borderColor: 'rgba(255, 159, 64, 1)',
+               backgroundColor: 'rgba(255, 159, 64, .2)',
                fill: false,
-               tension: 0.1
+               tension: 0.1,
+               borderWidth: 1,
+               pointRadius: 2,
             });
          }
          if (document.getElementById('smoothedData').checked) {
@@ -200,7 +202,9 @@
                borderColor: 'rgba(75, 192, 192, 1)',
                backgroundColor: 'rgba(75, 192, 192, 0.2)',
                fill: false,
-               tension: 0.1
+               tension: 0.1,
+               borderWidth: 1,
+               pointRadius: 2,
             });
          }
          config.data.labels = originalData.map((_, index) => index + 1);
