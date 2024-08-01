@@ -5,50 +5,37 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Line Chart with Moving Average</title>
-   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-   <style>
-      body {
-         background-color: #cbc7c3;
-      }
-
-      table {
-         width: 100%;
-         border-collapse: collapse;
-      }
-
-      th,
-      td {
-         border: 1px solid #ddd;
-         padding: 8px;
-      }
-
-      th {
-         background-color: #f2f2f2;
-         text-align: left;
-      }
-   </style>
+   <script src="./js/npmChart.js"></script>
+   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-   <div style="padding: 0 0 20px 10px;">
+   <div class="goto">
       <a href="index2.html"><button>x-y diagram</button></a>
       <a href="index3.html"><button>multi x-y diagram</button></a>
    </div>
    <form id="dataForm">
-      <div style="padding-block-end: 10px;"><label for="dataInput">Data (comma separated or line breaks):</label></div>
-      <div><textarea id="dataInput" rows="4" cols="50" placeholder="-263.8669, -299.3872, -304.4615, ..."></textarea>
+      <div class="pb-10"><label for="dataInput">Data (comma separated or line breaks):</label></div>
+      <div>
+         <textarea id="dataInput" rows="4" cols="50" placeholder="-263.8669, -299.3872, -304.4615, ..."></textarea>
       </div>
-      <button type="submit" style="font-size: .9rem; padding:5px 15px; margin-left: 10px;">Submit</button>
+      <button type="submit" class="dataBtn">Submit</button>
    </form>
-   <br>
-   <label><input type="checkbox" id="originalData" checked> Original data</label>
-   <label><input type="checkbox" id="smoothedData" checked> Smoothed data</label>
+   <div class="inputBox" style="display: none;">
+      <div class="checkboxWrapper">
+         <input class="switch" type="checkbox" id="originalData"  checked>
+      </div>
+      <div class="checkboxWrapper">
+         <input class="switch" type="checkbox" id="smoothedData"  checked>
+      </div>
+   </div>
 
    <canvas id="myChart" width="400" height="200"></canvas>
 
 
-   <div style="padding-block: 10px;"><button id="copyToClipboard" style="font-size: .9rem; padding:5px 15px; margin-left: 10px;">Copy to
-         clipboard</button></div>
+   <div class="pb-10">
+      <button id="copyToClipboard" class="dataBtn">Copy to clipboard</button>
+      </div>
    <table>
       <thead>
          <tr>
@@ -61,7 +48,7 @@
          <!-- Data goes here -->
       </tbody>
    </table>
-   <div style="padding-block: 20px;">
+   <div class="pb-10">
       <p>choose the format in which you want the data</p>
       <label><input type="checkbox" id="commaSeparated" checked> Comma separated</label>
       <label><input type="checkbox" id="newlineSeparated"> Line breaks</label>
